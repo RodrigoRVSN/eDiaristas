@@ -5,14 +5,32 @@ import SafeEnvironment from "ui/components/feedback/SafeEnvironment/SafeEnvironm
 import PageTitle from "ui/components/data-display/PageTitle/PageTitle";
 import UserInformation from "ui/components/data-display/UserInformation/UserInformation";
 import TextFieldMask from "ui/components/inputs/TextFieldMask/TextFieldMask";
-import { Button, Typography, Container } from "@material-ui/core";
+import {
+  Button,
+  Typography,
+  Container,
+  CircularProgress,
+} from "@material-ui/core";
 import {
   FormElementsContainer,
   ProfissionaisPaper,
   ProfissionaisContainer,
 } from "@styles/pages/index.style";
+import useIndex from "data/hooks/pages/useIndex.page";
 
 export default function Home() {
+  const {
+    cep,
+    setCep,
+    cepValid,
+    searchProfissionals,
+    error,
+    profissionals,
+    searchOk,
+    loading,
+    remainingProfissionals,
+  } = useIndex();
+
   return (
     <div>
       <SafeEnvironment />
@@ -28,61 +46,63 @@ export default function Home() {
             label={"Digite seu CEP"}
             fullWidth
             variant={"outlined"}
+            value={cep}
+            onChange={(ev) => setCep(ev.target.value)}
           />
 
-          <Typography color={"error"}>CEP inválido</Typography>
+          {error && <Typography color={"error"}>{error}</Typography>}
 
           <Button
             variant={"contained"}
             color={"secondary"}
             sx={{ width: "14rem" }}
+            disabled={!cepValid || loading}
+            onClick={() => searchProfissionals(cep)}
           >
-            Buscar
+            {loading ? <CircularProgress size={20} /> : "Buscar"}
           </Button>
         </FormElementsContainer>
 
-        <ProfissionaisPaper>
-          <ProfissionaisContainer>
-            <UserInformation
-              name={"Rodrigo Victor"}
-              picture={"https://github.com/RodrigoRVSN.png"}
-              rating={3}
-              description={"Boituva"}
-            />
-            <UserInformation
-              name={"Rodrigo Victor"}
-              picture={"https://github.com/RodrigoRVSN.png"}
-              rating={3}
-              description={"Boituva"}
-            />
-            <UserInformation
-              name={"Rodrigo Victor"}
-              picture={"https://github.com/RodrigoRVSN.png"}
-              rating={3}
-              description={"Boituva"}
-            />
-            <UserInformation
-              name={"Rodrigo Victor"}
-              picture={"https://github.com/RodrigoRVSN.png"}
-              rating={3}
-              description={"Boituva"}
-            />
-            <UserInformation
-              name={"Rodrigo Victor"}
-              picture={"https://github.com/RodrigoRVSN.png"}
-              rating={3}
-              description={"Boituva"}
-            />
-            <UserInformation
-              name={"Gabrielly Victor"}
-              picture={
-                "https://scontent.fsod1-2.fna.fbcdn.net/v/t31.18172-8/10575298_697817510292305_3358077747317723361_o.jpg?_nc_cat=103&ccb=1-3&_nc_sid=cdbe9c&_nc_ohc=GN4ec5aXpvcAX97IowM&_nc_ht=scontent.fsod1-2.fna&oh=6bbc47e7ccd12dedeb8bd51842bead4f&oe=60E98385"
-              }
-              rating={0}
-              description={"Boituva"}
-            />
-          </ProfissionaisContainer>
-        </ProfissionaisPaper>
+        {searchOk &&
+          (profissionals.length > 0 ? (
+            <ProfissionaisPaper>
+              <ProfissionaisContainer>
+                {profissionals.map((item, index) => {
+                  return (
+                    <UserInformation
+                      key={index}
+                      name={item.nome_completo}
+                      picture={item.foto_usuario}
+                      rating={item.reputacao}
+                      description={item.cidade}
+                    />
+                  );
+                })}
+              </ProfissionaisContainer>
+              <Container sx={{ textAlign: "center" }}>
+                {remainingProfissionals > 0 && (
+                  <Typography sx={{ mt: 5 }}>
+                    e mais {remainingProfissionals}{" "}
+                    {remainingProfissionals > 1
+                      ? "profissionais próximos"
+                      : "profissional próximo"}{" "}
+                    deste endereço!
+                  </Typography>
+                )}
+                <Button
+                  variant={"contained"}
+                  color={"secondary"}
+                  sx={{ marginTop: 5 }}
+                >
+                  CONTRATAR
+                </Button>
+              </Container>
+            </ProfissionaisPaper>
+          ) : (
+            <Typography align={"center"} color={"textPrimary"}>
+              Nenhum profissional foi encontrado no CEP {cep}
+            </Typography>
+          ))}
       </Container>
     </div>
   );

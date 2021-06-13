@@ -1,17 +1,17 @@
-import react from "react";
+import React from "react";
 import {
-  AvatarStyled,
-  RatingStyled,
-  UserDescription,
   UserInformationContainer,
   UserName,
+  UserDescription,
+  AvatarStyled,
+  RatingStyled,
 } from "./UserInformation.style";
 
 interface UserInformationProps {
   picture: string;
   name: string;
   rating: number;
-  description: string;
+  description?: string;
 }
 
 const UserInformation: React.FC<UserInformationProps> = ({
@@ -21,14 +21,12 @@ const UserInformation: React.FC<UserInformationProps> = ({
   description,
 }) => {
   return (
-    <>
-      <UserInformationContainer>
-        <AvatarStyled src={picture}>{name[0]}</AvatarStyled>
-        <UserName>{name}</UserName>
-        <RatingStyled readOnly value={rating} />
-        <UserDescription>{description}</UserDescription>
-      </UserInformationContainer>
-    </>
+    <UserInformationContainer>
+      <AvatarStyled src={picture}>{name[0]}</AvatarStyled>
+      <UserName>{name}</UserName>
+      <RatingStyled readOnly value={rating} />
+      <UserDescription>{description}</UserDescription>
+    </UserInformationContainer>
   );
 };
 
